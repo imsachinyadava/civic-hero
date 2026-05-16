@@ -9,7 +9,11 @@ export default function ProfilePage() {
   const { user } = useUser();
   const [dbProfile, setDbProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  // NEW: Dynamic city state
+  const [currentCity, setCurrentCity] = useState<string>("Locating...");
 
+  // 1. Fetch User DB Profile
   useEffect(() => {
     async function loadProfile() {
       const profile = await syncProfile();
@@ -18,6 +22,33 @@ export default function ProfilePage() {
     }
     if (user) loadProfile();
   }, [user]);
+
+  // 2. NEW: Fetch Live Location for the Profile Header (Forced to English)
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            // ADDED &accept-language=en HERE
+            const geoRes = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`
+            );
+            const geoData = await geoRes.json();
+            
+            // Extract the most accurate local municipality name
+            const city = geoData.address.city || geoData.address.town || geoData.address.village || "Unknown Location";
+            setCurrentCity(city);
+          } catch {
+            setCurrentCity("Location unavailable");
+          }
+        },
+        () => setCurrentCity("Location access denied")
+      );
+    } else {
+      setCurrentCity("Geolocation unsupported");
+    }
+  }, []);
 
   if (!user || loading) {
     return (
@@ -35,8 +66,11 @@ export default function ProfilePage() {
             <img src={user.imageUrl} className="w-24 h-24 rounded-[32px] object-cover shadow-xl" alt="Profile" />
             <div>
               <h1 className="text-2xl font-black text-slate-800 tracking-tight">{user.fullName}</h1>
+              
+              {/* DYNAMIC CITY RENDERED HERE */}
               <p className="text-slate-500 font-bold text-sm flex items-center mt-1">
-                <MapPin size={14} className="mr-1 text-blue-500" /> Varanasi, India
+                <MapPin size={14} className="mr-1 text-blue-500" /> 
+                {currentCity}, India
               </p>
             </div>
           </div>
