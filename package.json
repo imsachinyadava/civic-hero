@@ -9,13 +9,21 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.2.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "@clerk/nextjs": "^4.29.9",
+    "@ducanh2912/next-pwa": "^10.2.9",
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.105.4",
+    "cloudinary": "^2.10.0",
+    "lucide-react": "^1.14.0",
+    "next": "^14.2.35",
+    "pg": "^8.20.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
